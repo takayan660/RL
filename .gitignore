@@ -1,7 +1,5 @@
-/.emacs.d/auto-save-list
-/.emacs.d/undohist
-/.emacs.d/ac-comphist.dat
-/.vim/bundle
 *~
 *#
 *.swp
+
+experiment
