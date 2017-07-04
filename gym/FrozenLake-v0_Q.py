@@ -74,7 +74,7 @@ if __name__=='__main__':
             # 状態と行動の記録
             observation = new_observation
 
-            if new_observation == 15:
+            if new_observation == nstates-1:
                 goal += 1
 
             if done:
