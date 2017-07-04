@@ -3,25 +3,40 @@ from gym import envs
 import numpy as np
 import sys
 
-nstates = 4*4   # 状態数
-nactions = 4    # 行動数
-eM = 10000      # 評価を行うエピソード数
+nstates = 4*4       # 状態数
+nactions = 4        # 行動数
+eM = 10000          # 評価を行うエピソード数
 alpha = 0.7
 gamma = 0.9
-goal = 0        # ゴールした回数
+policySelect = 2    # 1: e-greedy手法 2: softmax手法
+tau = 0.0016        # softmax手法の温度
+goal = 0            # ゴールした回数
 
 class Qlearning:
     """ class for Q Learning """
 
     @classmethod
     def choose_action(self, Q, new_observation, E_GREEDY_RATIO):
-        """ e-greedy法で行動を決める. """
-        if E_GREEDY_RATIO < np.random.uniform():
-            # greedy法を適用する
-            # return self.choose_action_greedy(Q, new_observation)
-            return np.argmax(Q[new_observation,:])
-        else:
-            return np.random.randint(env.action_space.n)
+        """ 行動決定 """
+        if policySelect == 1: # e-greedy
+            if E_GREEDY_RATIO < np.random.uniform():
+                # greedy法を適用する
+                return np.argmax(Q[new_observation,:])
+            else:
+                return np.random.randint(env.action_space.n)
+        elif policySelect == 2: # softmax
+            policy = np.exp(Q[new_observation,:]/tau) / np.sum(np.exp(Q[new_observation,:]/tau))
+            
+            # 逆関数法で行動選択
+            random = np.random.uniform()
+            cprob = 0
+            for a in range(nactions):
+                cprob = cprob + policy[a]
+                action = a
+                if random < cprob:
+                    break
+
+            return action
 
     @classmethod
     def Qupdate(self, Q, new_observation, observation, action, reward):
@@ -67,5 +82,6 @@ if __name__=='__main__':
                 break
     print(Q)
     print(goal)
+    print(E_GREEDY_RATIO)
 
     env.close()
