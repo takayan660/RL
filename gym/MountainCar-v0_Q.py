@@ -3,16 +3,16 @@ from gym import envs
 import numpy as np
 import sys
 
-state1p_num = 18    # 状態数
+state1p_num = 180        # 状態数
 state2v_num = 140
-action_num = 3      # 行動数
-epiode_num = 10000  # 評価を行うエピソード数
+action_num = 3          # 行動数
+epiode_num = 1000000    # 評価を行うエピソード数
 step = 1000
-policySelect = 1    # 0: e-greedy手法 1: softmax手法
+policySelect = 0        # 0: e-greedy手法 1: softmax手法
 alpha = 0.7
 gamma = 0.9
-tau = 0.0016        # softmax手法の温度
-goal = 0            # 最後の100回中ゴールした回数
+tau = 0.0016            # softmax手法の温度
+goal = 0                # 最後の100回中ゴールした回数
 goal_total = 0
 
 class Qlearning:
@@ -23,7 +23,7 @@ class Qlearning:
         if policySelect == 0: # e-greedy
             if epsilon < np.random.uniform():
                 # greedy法を適用する
-                return np.argmax(Q[new_state[0], new_state[1],:])
+                return np.argmax(Q[int(new_state[0]), int(new_state[1]),:])
             else:
                 return np.random.randint(env.action_space.n)
 
@@ -49,18 +49,18 @@ class Qlearning:
 if __name__=='__main__':
     Ql = Qlearning
     Q = np.zeros([state1p_num, state2v_num, action_num])
-    epsilon = 0.4
+    epsilon = 1.0
 
     env = gym.make('MountainCar-v0')
 
     for i_episode in range(epiode_num):
         state = env.reset()
-        epsilon *= 0.999
+        epsilon *= 0.9999
         if epsilon < 1e-3:
             epsilon = 0.001
         print("Episode {}".format(i_episode+1))
         for t in range(step):
-            #env.render()
+            env.render()
 
             # 行動aの獲得
             # action = env.action_space.sample()
@@ -73,7 +73,7 @@ if __name__=='__main__':
             reward = 1 / (1+(0.5-new_state[0])**2)
 
             # 離散化
-            new_state[0] = round(new_state[0]*10)+12
+            new_state[0] = round(new_state[0]*100)+120
             new_state[1] = round(new_state[1]*100)+70
             
             # Q学習の更新
@@ -86,8 +86,10 @@ if __name__=='__main__':
             # 状態と行動の記録
             state = new_state
 
+            print new_state[0]
+
             if done:
-                if new_state[0] == state1p_num-1:
+                if new_state[0] == state1p_num-10:
                     goal_total += 1
                     if i_episode > epiode_num-101:
                         goal += 1
