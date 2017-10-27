@@ -23,14 +23,14 @@ def train(env_id, num_timesteps, seed):
             timesteps_per_batch=2048,
             clip_param=0.2, entcoeff=0.0,
             optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
-            gamma=0.99, lam=0.95,
+            gamma=0.95, lam=0.1,
             schedule='linear'
             )
     env.close()
 
 def main():
     env_name = 'Pendulum-v0'
-    train(env_name, num_timesteps=1e6, seed=0)
+    train(env_name, num_timesteps=5e5, seed=0)
 
 if __name__ == '__main__':
     main()
